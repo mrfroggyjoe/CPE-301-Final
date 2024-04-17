@@ -68,6 +68,7 @@ void UARTStart(unsigned long baud){
  *myUBRR0  = tbaud;
 }
 
+//output via uart
 void UARTOut(unsigned char out){
   while(!(*myUCSR0A & 0b00100000)){}
   *myUDR0 = out;
