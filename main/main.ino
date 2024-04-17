@@ -2,7 +2,7 @@
 //Sofia
 //Joe
 //Helene
-
+ #include <LiquidCrystal.h>
  #define RDA 0x80
  #define TBE 0x20  
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
@@ -18,6 +18,7 @@ int threshold = 500;
 void setup() {
   // put your setup code here, to run once:
   UARTStart(9600);
+  lcd.begin(16, 2);
 }
 
 void loop() {
