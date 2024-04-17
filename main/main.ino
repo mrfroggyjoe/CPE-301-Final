@@ -36,7 +36,9 @@ void moveVent(int direction){
 
 // display message via LCD
 void LCDDisplay(){
-
+lcd.clear(); // Clear the LCD display
+lcd.setCursor(0, 0); // Set the cursor to the top-left position
+lcd.print(number); // Print the number to the LCD
 }
 
 // display message via UART/Serial monitor
