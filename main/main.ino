@@ -32,7 +32,7 @@ void LCDDisplay(){
 }
 
 // display message via UART/Serial monitor
-void UARTDisaply(){
+void UARTDispaly(){
 
 }
 
