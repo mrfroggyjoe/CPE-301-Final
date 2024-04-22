@@ -14,10 +14,14 @@
  volatile unsigned int  *myUBRR0  = (unsigned int *) 0x00C4;
  volatile unsigned char *myUDR0   = (unsigned char *)0x00C6;
 
- volatile unsigned char* my_ADMUX = (unsigned char*) 0x7C;
+volatile unsigned char* my_ADMUX = (unsigned char*) 0x7C;
 volatile unsigned char* my_ADCSRB = (unsigned char*) 0x7B;
 volatile unsigned char* my_ADCSRA = (unsigned char*) 0x7A;
 volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
+
+volatile unsigned char* RED = (unsigned char*) 0x00;
+volatile unsigned char* BLUE = (unsigned char*) 0x00;
+volatile unsigned char* GREEN = (unsigned char*) 0x00;
 
 int waterLevel = 0;
 int threshold = 500;
@@ -156,4 +160,15 @@ unsigned int adc_read(unsigned char adc_channel_num)
   while((*my_ADCSRA & 0x40) != 0);
   // return the result in the ADC data register
   return *my_ADC_DATA;
+}
+void setStateLED(char c){
+  if (c == 'b'){
+    
+  } else if (c == 'g'){
+
+  } else if (c == 'r'){
+
+  } else if (c == 'y'){
+
+  }
 }
