@@ -51,6 +51,7 @@ int checkWaterLevel(){
 // the movement up or down
 void moveVent(int direction){
 const int Revolution = 2038;
+Stepper myStepper = Stepper(stepsPerRevolution, 8, 10, 9, 11);
 }
 
 // display message via LCD
