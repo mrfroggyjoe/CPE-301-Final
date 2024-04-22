@@ -17,9 +17,15 @@
 volatile unsigned char* my_ADCSRB = (unsigned char*) 0x7B;
 volatile unsigned char* my_ADCSRA = (unsigned char*) 0x7A;
 volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
-
+// to start the system up
+const int buttonPin1 =
+// wo measure the waterthreshold
 int waterLevel = 0;
 int threshold = 500;
+
+// buttons for the stepper motors
+const int buttonPin2 = ?;  //  one direction
+const int buttonPin3 = ?;  //  opposite direction
 
 
 void setup() {
@@ -29,7 +35,10 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  if(digitalRead(buttonPin1)== HIGH){
+    adc_init();
+    
+  }
 
 }
 // Functions
