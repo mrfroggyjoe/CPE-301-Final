@@ -20,6 +20,7 @@ volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
 
 int waterLevel = 0;
 int threshold = 500;
+int state = 0; // 0 = Disabled , 1 = Idle , 2 = Running , 3 = Error
 
 
 void setup() {
@@ -29,7 +30,18 @@ void setup() {
 }
 
 void loop() {
+  // All states Code
+
+
+  // All execpt Disabled 
+
+  //Case Specific 
+  //Switch (state)
   // put your main code here, to run repeatedly:
+  if (checkWaterLevel() == 0){
+    //
+  }
+
 
 }
 // Functions
@@ -42,9 +54,11 @@ int checkWaterLevel(){
   waterLevel = adc_read(0);
 
  if(waterLevel >= threshold){
+  return 1;
 }
  else if(waterLevel< threshold){
   lcd.print("Water level too low");
+  return 0;
 }
 }
 
