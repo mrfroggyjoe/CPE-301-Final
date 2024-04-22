@@ -72,12 +72,12 @@ void UARTDisplay(unsigned char message[],int length){
 // cheack temp
 float getTemp(){
   int chk = DHT11.read(DHT11PIN);
-17
-18  Serial.print("Humidity (%): ");
-19  Serial.println((float)DHT11.humidity, 2);
-20
-21  Serial.print("Temperature  (C): ");
-22  Serial.println((float)DHT11.temperature, 2);
+
+  Serial.print("Humidity (%): ");
+  Serial.println((float)DHT11.humidity, 2);
+
+  Serial.print("Temperature  (C): ");
+  Serial.println((float)DHT11.temperature, 2);
 }
 
 //check humidity
