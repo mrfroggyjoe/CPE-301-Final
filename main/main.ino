@@ -3,6 +3,7 @@
 //Joe
 //Helene
  #include <LiquidCrystal.h>
+ #include <dht11.h>
 
 
  #define RDA 0x80
@@ -84,7 +85,13 @@ void UARTDisplay(unsigned char message[],int length){
 
 // cheack temp
 float getTemp(){
+  int chk = DHT11.read(DHT11PIN);
 
+  Serial.print("Humidity (%): ");
+  Serial.println((float)DHT11.humidity, 2);
+
+  Serial.print("Temperature  (C): ");
+  Serial.println((float)DHT11.temperature, 2);
 }
 
 //check humidity
