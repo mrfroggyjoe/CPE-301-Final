@@ -3,7 +3,7 @@
 //Joe
 //Helene
  #include <LiquidCrystal.h>
-
+#include <Stepper.h>
 
  #define RDA 0x80
  #define TBE 0x20  
@@ -50,7 +50,7 @@ int checkWaterLevel(){
 
 // the movement up or down
 void moveVent(int direction){
-
+const int Revolution = 2038;
 }
 
 // display message via LCD
