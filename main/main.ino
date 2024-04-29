@@ -19,9 +19,9 @@ volatile unsigned char* my_ADCSRB = (unsigned char*) 0x7B;
 volatile unsigned char* my_ADCSRA = (unsigned char*) 0x7A;
 volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
 
-volatile unsigned char* RED = (unsigned char*) 0x00;
-volatile unsigned char* BLUE = (unsigned char*) 0x00;
-volatile unsigned char* GREEN = (unsigned char*) 0x00;
+volatile unsigned char* RED_LIGHT = (unsigned char*) 0x00;
+volatile unsigned char* BLUE_LIGHT = (unsigned char*) 0x00;
+volatile unsigned char* GREEN_LIGHT = (unsigned char*) 0x00;
 
 int waterLevel = 0;
 int threshold = 500;
@@ -41,7 +41,20 @@ void loop() {
   // All execpt Disabled 
 
   //Case Specific 
-  //Switch (state)
+  switch (state){
+    case 0:
+      //Disabled State
+      setStateLED('y');
+      break;
+    case 1:
+      // IDLE
+      setStateLED('');
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+  }
   // put your main code here, to run repeatedly:
   if (checkWaterLevel() == 0){
     //
@@ -163,7 +176,7 @@ unsigned int adc_read(unsigned char adc_channel_num)
 }
 void setStateLED(char c){
   if (c == 'b'){
-    
+
   } else if (c == 'g'){
 
   } else if (c == 'r'){
