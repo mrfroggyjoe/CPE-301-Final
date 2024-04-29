@@ -3,8 +3,8 @@
 //Joe
 //Helene
  #include <LiquidCrystal.h>
+#include <dht11.h>
 #include <Stepper.h>
-
  #define RDA 0x80
  #define TBE 0x20  
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
@@ -13,19 +13,13 @@
  volatile unsigned int  *myUBRR0  = (unsigned int *) 0x00C4;
  volatile unsigned char *myUDR0   = (unsigned char *)0x00C6;
 
- volatile unsigned char* my_ADMUX = (unsigned char*) 0x7C;
+volatile unsigned char* my_ADMUX = (unsigned char*) 0x7C;
 volatile unsigned char* my_ADCSRB = (unsigned char*) 0x7B;
 volatile unsigned char* my_ADCSRA = (unsigned char*) 0x7A;
 volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
-// to start the system up
-const int buttonPin1 =
-// wo measure the waterthreshold
+
 int waterLevel = 0;
 int threshold = 500;
-
-// buttons for the stepper motors
-const int buttonPin2 = ?;  //  one direction
-const int buttonPin3 = ?;  //  opposite direction
 
 
 void setup() {
@@ -35,10 +29,7 @@ void setup() {
 }
 
 void loop() {
-  if(digitalRead(buttonPin1)== HIGH){
-    adc_init();
-    
-  }
+  // put your main code here, to run repeatedly:
 
 }
 // Functions
@@ -51,9 +42,11 @@ int checkWaterLevel(){
   waterLevel = adc_read(0);
 
  if(waterLevel >= threshold){
+  return 1;
 }
  else if(waterLevel< threshold){
   lcd.print("Water level too low");
+  return 0;
 }
 }
 
@@ -80,7 +73,13 @@ void UARTDisplay(unsigned char message[],int length){
 
 // cheack temp
 float getTemp(){
+  int chk = DHT11.read(DHT11PIN);
 
+  Serial.print("Humidity (%): ");
+  Serial.println((float)DHT11.humidity, 2);
+
+  Serial.print("Temperature  (C): ");
+  Serial.println((float)DHT11.temperature, 2);
 }
 
 //check humidity
@@ -145,4 +144,15 @@ unsigned int adc_read(unsigned char adc_channel_num)
   while((*my_ADCSRA & 0x40) != 0);
   // return the result in the ADC data register
   return *my_ADC_DATA;
+}
+void setStateLED(char c){
+  if (c == 'b'){
+
+  } else if (c == 'g'){
+
+  } else if (c == 'r'){
+
+  } else if (c == 'y'){
+
+  }
 }
