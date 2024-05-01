@@ -18,17 +18,17 @@ volatile unsigned char* my_ADCSRB = (unsigned char*) 0x7B;
 volatile unsigned char* my_ADCSRA = (unsigned char*) 0x7A;
 volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
 
-volatile unsigned char* LIGHT_DDR = (unsigned char*) 0x24; //pin 1 2 3 /-- PORT B
-volatile unsigned char* LIGHT_PORT = (unsigned char*) 0x25; //pin 1 2 3 /-- PORT B
-volatile unsigned int RED = 5; // pin 1
-volatile unsigned int GREEN = 6; // pin 2 
-volatile unsigned int BLUE = 7; // pin 3
+volatile unsigned char* LIGHT_DDR = (unsigned char*) 0x24; //pin 11 12 13 /-- PORT B
+volatile unsigned char* LIGHT_PORT = (unsigned char*) 0x25; //pin 11 12 13 /-- PORT B
+volatile unsigned int RED = 5; // pin 11
+volatile unsigned int GREEN = 6; // pin 12 
+volatile unsigned int BLUE = 7; // pin 13
 
 
-int waterLevelPin = 0;
+volatile unsigned int waterLevelPin = 4; // Pin 10 
 int stepsPerRevolution = 0;
 // LCD pins <--> Arduino pins
-const int RS = 11, EN = 12, D4 = 2, D5 = 3, D6 = 4, D7 = 5; // change
+const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to 
 
 int waterLevel = 0;
 int threshold = 500;
@@ -40,8 +40,6 @@ void setup() {
   // put your setup code here, to run once:
   *LIGHT_DDR |= 0xFF;
 
-  Serial.begin(9600);
-
   UARTStart(9600);
   lcd.begin(16, 2);
 }
@@ -51,22 +49,22 @@ void loop() {
   switch (state){
     case 0:
       // IDLE
-      Serial.println("LIGHT OFF");
+      LCDDisplay("Green");
       setStateLED('g');
       break;
     case 1:
       // RUNNING
+      LCDDisplay("Blue");
       setStateLED('b');
-      Serial.println("LIGHT ON");
       break;
     case 2:
       // DISABLED
-      Serial.println("LIGHT OFF");
+      LCDDisplay("Yellow");
       setStateLED('y');
       break;
     case 3:
       // ERROR 
-      Serial.println("LIGHT OFF");
+      LCDDisplay("Red");
       setStateLED('r');
       break;
   } 
@@ -102,10 +100,10 @@ Stepper myStepper = Stepper(stepsPerRevolution, 8, 10, 9, 11);
 }
 
 // display message via LCD
-void LCDDisplay(){
-lcd.clear(); // Clear the LCD display
-lcd.setCursor(0, 0); // Set the cursor to the top-left position
-lcd.write(""); // Print the number to the LCD
+void LCDDisplay(char c[]){
+  lcd.clear(); // Clear the LCD display
+  lcd.setCursor(0, 0); // Set the cursor to the top-left position
+  lcd.write(c); // Print the number to the LCD
 }
 
 // display message via UART/Serial monitor
