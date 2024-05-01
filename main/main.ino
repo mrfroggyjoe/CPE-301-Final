@@ -3,7 +3,7 @@
 //Joe
 //Helene
  #include <LiquidCrystal.h>
-#include <dht11.h>
+#include <DHT11.h>
 #include <Stepper.h>
  #define RDA 0x80
  #define TBE 0x20  
@@ -18,19 +18,64 @@ volatile unsigned char* my_ADCSRB = (unsigned char*) 0x7B;
 volatile unsigned char* my_ADCSRA = (unsigned char*) 0x7A;
 volatile unsigned int* my_ADC_DATA = (unsigned int*) 0x78;
 
+volatile unsigned char* LIGHT_DDR = (unsigned char*) 0x24; //pin 1 2 3 /-- PORT B
+volatile unsigned char* LIGHT_PORT = (unsigned char*) 0x25; //pin 1 2 3 /-- PORT B
+volatile unsigned int RED = 5; // pin 1
+volatile unsigned int GREEN = 6; // pin 2 
+volatile unsigned int BLUE = 7; // pin 3
+
+
+int waterLevelPin = 0;
+int stepsPerRevolution = 0;
+// LCD pins <--> Arduino pins
+const int RS = 11, EN = 12, D4 = 2, D5 = 3, D6 = 4, D7 = 5; // change
+
 int waterLevel = 0;
 int threshold = 500;
+int state = 0; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error
 
+LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 void setup() {
   // put your setup code here, to run once:
+  *LIGHT_DDR |= 0xFF;
+
+  Serial.begin(9600);
+
   UARTStart(9600);
   lcd.begin(16, 2);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  switch (state){
+    case 0:
+      // IDLE
+      Serial.println("LIGHT OFF");
+      setStateLED('g');
+      break;
+    case 1:
+      // RUNNING
+      setStateLED('b');
+      Serial.println("LIGHT ON");
+      break;
+    case 2:
+      // DISABLED
+      Serial.println("LIGHT OFF");
+      setStateLED('y');
+      break;
+    case 3:
+      // ERROR 
+      Serial.println("LIGHT OFF");
+      setStateLED('r');
+      break;
+  } 
+// remove after testing
+  delay(1000);
+state++;
+if(state == 4){
+  state = 0;
+}
 }
 // Functions
 //
@@ -60,7 +105,7 @@ Stepper myStepper = Stepper(stepsPerRevolution, 8, 10, 9, 11);
 void LCDDisplay(){
 lcd.clear(); // Clear the LCD display
 lcd.setCursor(0, 0); // Set the cursor to the top-left position
-lcd.print(); // Print the number to the LCD
+lcd.write(""); // Print the number to the LCD
 }
 
 // display message via UART/Serial monitor
@@ -73,13 +118,13 @@ void UARTDisplay(unsigned char message[],int length){
 
 // cheack temp
 float getTemp(){
-  int chk = DHT11.read(DHT11PIN);
+  //int chk = DHT11.read(DHT11PIN);
 
   Serial.print("Humidity (%): ");
-  Serial.println((float)DHT11.humidity, 2);
+  //Serial.println((float)DHT11.humidity, 2);
 
   Serial.print("Temperature  (C): ");
-  Serial.println((float)DHT11.temperature, 2);
+ // Serial.println((float)DHT11.temperature, 2);
 }
 
 //check humidity
@@ -147,12 +192,17 @@ unsigned int adc_read(unsigned char adc_channel_num)
 }
 void setStateLED(char c){
   if (c == 'b'){
-
+    *LIGHT_PORT &= 0x00;
+    *LIGHT_PORT |= 1<<BLUE;
   } else if (c == 'g'){
-
+    *LIGHT_PORT &= 0x00;
+    *LIGHT_PORT |= 1<<GREEN;
   } else if (c == 'r'){
-
+    *LIGHT_PORT &= 0x00;
+    *LIGHT_PORT |= 1<<RED;
   } else if (c == 'y'){
-
+    *LIGHT_PORT &= 0x00;
+    *LIGHT_PORT |= 1<<RED;
+    *LIGHT_PORT |= 1<<GREEN;
   }
 }
