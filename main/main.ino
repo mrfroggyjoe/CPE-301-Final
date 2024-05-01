@@ -2,11 +2,16 @@
 //Sofia
 //Joe
 //Helene
- #include <LiquidCrystal.h>
+#include <LiquidCrystal.h>
 #include <DHT11.h>
 #include <Stepper.h>
+
+
  #define RDA 0x80
  #define TBE 0x20  
+
+DHT11 DHT(10); // connect to pin 10;
+
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
  volatile unsigned char *myUCSR0C = (unsigned char *)0x00C2;
@@ -25,46 +30,56 @@ volatile unsigned int GREEN = 6; // pin 12
 volatile unsigned int BLUE = 7; // pin 13
 
 
-volatile unsigned int waterLevelPin = 4; // Pin 10 
+volatile unsigned int waterLevelPin = 0; // Pin ??
 int stepsPerRevolution = 0;
 // LCD pins <--> Arduino pins
-const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to 
+const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to Blue, en(8) to black
 
 int waterLevel = 0;
 int threshold = 500;
-int state = 0; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error
+int state = 2; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error -- Starts Disabled 
 
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 void setup() {
-  // put your setup code here, to run once:
   *LIGHT_DDR |= 0xFF;
+  *LIGHT_DDR &= 0b11101111; // set pin 10 to read for humidity sensor.
+
+  Serial.begin(9600);
 
   UARTStart(9600);
   lcd.begin(16, 2);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
+  char* temp;
+  char* hum;
+  intToCharArray(getTemp(),&temp);
+  intToCharArray(getHumidity(),&hum);
+
   switch (state){
     case 0:
       // IDLE
-      LCDDisplay("Green");
+      // check display temp hum
+
+      LCDMonitor(temp,hum);
       setStateLED('g');
       break;
     case 1:
       // RUNNING
-      LCDDisplay("Blue");
+      LCDMonitor(temp,hum);
       setStateLED('b');
       break;
     case 2:
       // DISABLED
-      LCDDisplay("Yellow");
+      lcd.clear();
       setStateLED('y');
       break;
     case 3:
       // ERROR 
-      LCDDisplay("Red");
+      LCDDisplay(0,"Water Level is");
+      LCDDisplay(1,"too low!");
       setStateLED('r');
       break;
   } 
@@ -74,36 +89,31 @@ state++;
 if(state == 4){
   state = 0;
 }
+
+// Memory freeing
+  free(temp);
+  free(hum);
 }
 // Functions
 //
 
 //return 1 if okay 0 if too low
 int checkWaterLevel(){
-
   pinMode(waterLevelPin, OUTPUT);
   waterLevel = adc_read(0);
 
  if(waterLevel >= threshold){
   return 1;
-}
- else if(waterLevel< threshold){
-  lcd.print("Water level too low");
-  return 0;
-}
+  }
+  else if(waterLevel< threshold){
+    return 0;
+  }
 }
 
 // the movement up or down
 void moveVent(int direction){
 const int Revolution = 2038;
 Stepper myStepper = Stepper(stepsPerRevolution, 8, 10, 9, 11);
-}
-
-// display message via LCD
-void LCDDisplay(char c[]){
-  lcd.clear(); // Clear the LCD display
-  lcd.setCursor(0, 0); // Set the cursor to the top-left position
-  lcd.write(c); // Print the number to the LCD
 }
 
 // display message via UART/Serial monitor
@@ -114,20 +124,16 @@ void UARTDisplay(unsigned char message[],int length){
   UARTOut('\n');
 }
 
-// cheack temp
-float getTemp(){
-  //int chk = DHT11.read(DHT11PIN);
-
-  Serial.print("Humidity (%): ");
-  //Serial.println((float)DHT11.humidity, 2);
-
-  Serial.print("Temperature  (C): ");
- // Serial.println((float)DHT11.temperature, 2);
+// check temp
+int getTemp(){
+  int temperature = DHT.readTemperature();
+  return temperature * 1.8 + 32;
 }
 
 //check humidity
-float getHumidity(){
-
+int getHumidity(){
+  int humidity = DHT.readHumidity();
+  return humidity;
 }
 
 //initialize the UART
@@ -188,6 +194,8 @@ unsigned int adc_read(unsigned char adc_channel_num)
   // return the result in the ADC data register
   return *my_ADC_DATA;
 }
+
+
 void setStateLED(char c){
   if (c == 'b'){
     *LIGHT_PORT &= 0x00;
@@ -203,4 +211,31 @@ void setStateLED(char c){
     *LIGHT_PORT |= 1<<RED;
     *LIGHT_PORT |= 1<<GREEN;
   }
+}
+void LCDMonitor(char* t, char* h){
+      LCDDisplay(0,"Tempurature: ");
+      LCDAppend(0,13,t,2);
+      LCDAppend(0,15,"*",1);
+      LCDDisplay(1,"Humidity: ");
+      LCDAppend(1,13,h,2);
+      LCDAppend(1,15,"%",1);
+}
+// display message via LCD
+void LCDDisplay(int line, char c[]){
+  if (line == 0) { lcd.clear(); } // Clear the LCD display
+  lcd.setCursor(0, line); // Set the cursor to the left position
+  lcd.write(c); // Print the number to the LCD
+}
+
+void LCDAppend(int line, int x, char c[],int l){
+  lcd.setCursor(x, line); // Set the cursor to the position
+  for (int i = 0; i < l; i++){
+      lcd.write(c[i]);
+  }
+}
+void intToCharArray(int in, char **mem){
+  char *c = malloc(2);
+  c[1] = '0' + in%10;
+  c[0] = '0' + (in - in%10)/10;
+  *mem = c;
 }
