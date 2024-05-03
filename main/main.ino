@@ -12,6 +12,9 @@
 
 DHT11 DHT(10); // connect to pin 10;
 
+int stepsPerRevolution = 2048;
+Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
+
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
  volatile unsigned char *myUCSR0C = (unsigned char *)0x00C2;
@@ -31,13 +34,13 @@ volatile unsigned int BLUE = 7; // pin 13
 
 
 volatile unsigned int waterLevelPin = 0; // Pin ??
-int stepsPerRevolution = 0;
 // LCD pins <--> Arduino pins
 const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to Blue, en(8) to black
 
+float ventPosition = 45; // limited from 0 - 90;
 int waterLevel = 0;
 int threshold = 500;
-int state = 2; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error -- Starts Disabled 
+int state = 1; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error -- Starts Disabled 
 
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
@@ -47,6 +50,7 @@ void setup() {
 
   Serial.begin(9600);
 
+  Vent.setSpeed(2);
   UARTStart(9600);
   lcd.begin(16, 2);
 }
@@ -70,6 +74,7 @@ void loop() {
       // RUNNING
       LCDMonitor(temp,hum);
       setStateLED('b');
+      moveVent(-1);
       break;
     case 2:
       // DISABLED
@@ -85,7 +90,7 @@ void loop() {
   } 
 // remove after testing
   delay(1000);
-state++;
+//state++;
 if(state == 4){
   state = 0;
 }
@@ -112,8 +117,21 @@ int checkWaterLevel(){
 
 // the movement up or down
 void moveVent(int direction){
-const int Revolution = 2038;
-Stepper myStepper = Stepper(stepsPerRevolution, 8, 10, 9, 11);
+  if (direction == -1 && ventPosition > 0){
+    Vent.step(-stepsPerRevolution/48); //7.5* shift
+    ventPosition -= 7.5;
+  } else if (ventPosition < 90 && direction == 1){
+    Vent.step(stepsPerRevolution/48);
+    ventPosition += 7.5;
+  }
+}
+
+void controlFan(int onOff){
+  if (onOff == 1){
+    //set pin high
+  } else if (onOff == 0){
+    //set pin low
+  }
 }
 
 // display message via UART/Serial monitor
