@@ -17,7 +17,7 @@ int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
 
 const int WATERSENSORPIN = 2;
-
+const byte interruptPin = 10;
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
  volatile unsigned char *myUCSR0C = (unsigned char *)0x00C2;
@@ -71,6 +71,7 @@ void loop() {
   unsigned char waterlevel;
   intToCharArray(getTemp(),&temp);
   intToCharArray(getHumidity(),&hum);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);
 
   switch (state){
     case 0:
@@ -135,9 +136,17 @@ void moveVent(int direction){
 
 void controlFan(int onOff){
   if (onOff == 1){
-    //set pin high
+    *MOTOR_PORT |= 0b10000000;
   } else if (onOff == 0){
-    //set pin low
+    *MOTOR_PORT &= 0b01111111;
+  }
+}
+
+int getVentMovement(){
+  if (MOTOR_PORT & 0b01000000){
+    return -1;
+  } else if (MOTOR_PORT & 0b00100000){
+    return 1;
   }
 }
 
@@ -263,4 +272,8 @@ void intToCharArray(int in, char **mem){
   c[1] = '0' + in%10;
   c[0] = '0' + (in - in%10)/10;
   *mem = c;
+}
+void blink() {
+  state = !state;
+  
 }
