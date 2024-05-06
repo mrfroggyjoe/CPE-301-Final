@@ -35,6 +35,9 @@ volatile unsigned int RED = 5; // pin 11
 volatile unsigned int GREEN = 6; // pin 12 
 volatile unsigned int BLUE = 7; // pin 13
 
+volatile unsigned char* MOTOR_DDR = (unsigned char*) 0x10A; // PORT L PINS 42 - 49 inclusive
+volatile unsigned char* MOTOR_PORT = (unsigned char*) 0x10B; // PORT L PINS 42 - 49 inclusive
+
 
 volatile unsigned int waterLevelPin = 0; // Pin ??
 // LCD pins <--> Arduino pins
@@ -50,6 +53,8 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 void setup() {
   *LIGHT_DDR |= 0xFF;
   *LIGHT_DDR &= 0b11101111; // set pin 10 to read for humidity sensor.
+  *MOTOR_DDR |= 0b10000000; // set pin 42 to write for fan control
+  *MOTOR_DDR &= 0b10000000; // set pin 43-49 for read
 
   Serial.begin(9600);
 
