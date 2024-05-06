@@ -17,7 +17,7 @@ int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
 
 const int WATERSENSORPIN = 2;
-
+const byte interruptPin = 40;
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
  volatile unsigned char *myUCSR0C = (unsigned char *)0x00C2;
