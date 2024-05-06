@@ -77,13 +77,9 @@ void loop() {
       // IDLE
       // check display temp hum
       //check water elvel
-      waterlevel = adc_read(WATERSENSORPIN);
-        if(waterlevel < 20){
-          state = 3;
-          break;
-        }
       LCDMonitor(temp,hum);
       setStateLED('g');
+      state = checkWaterLevel();
       break;
     case 1:
       // RUNNING
@@ -120,15 +116,10 @@ if(state == 4){
 
 //return 1 if okay 0 if too low
 int checkWaterLevel(){
-  pinMode(waterLevelPin, OUTPUT);
-  waterLevel = adc_read(0);
-
- if(waterLevel >= threshold){
-  return 1;
-  }
-  else if(waterLevel< threshold){
-    return 0;
-  }
+  int waterlevel = adc_read(WATERSENSORPIN);
+    if(waterlevel < 200){
+      return 3;
+    }
 }
 
 // the movement up or down
