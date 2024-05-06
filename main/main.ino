@@ -16,7 +16,7 @@ DHT11 DHT(10); // connect to pin 10;
 int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
 
-const int WATERLEVELPIN = 2;
+const int WATERSENSORPIN = 2;
 
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
@@ -72,7 +72,7 @@ void loop() {
       // IDLE
       // check display temp hum
       //check water elvel
-      waterlevel = adcread(WATERSENSORPIN);
+      waterlevel = adc_read(WATERSENSORPIN);
         if(waterlevel < 20){
           state = 3;
           break;
