@@ -144,9 +144,17 @@ void moveVent(int direction){
 
 void controlFan(int onOff){
   if (onOff == 1){
-    //set pin high
+    *MOTOR_PORT |= 0b10000000;
   } else if (onOff == 0){
-    //set pin low
+    *MOTOR_PORT &= 0b01111111;
+  }
+}
+
+int getVentMovement(){
+  if (MOTOR_PORT & 0b01000000){
+    return -1;
+  } else if (MOTOR_PORT & 0b00100000){
+    return 1;
   }
 }
 
