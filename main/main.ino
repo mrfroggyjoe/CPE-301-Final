@@ -8,12 +8,15 @@
 
 
  #define RDA 0x80
- #define TBE 0x20  
+ #define TBE 0x20
+
 
 DHT11 DHT(10); // connect to pin 10;
 
 int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
+
+const int WATERLEVELPIN = 2;
 
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
@@ -53,12 +56,14 @@ void setup() {
   Vent.setSpeed(2);
   UARTStart(9600);
   lcd.begin(16, 2);
+  adc_init();
 }
 
 void loop() {
   
   char* temp;
   char* hum;
+  unsigned char waterlevel;
   intToCharArray(getTemp(),&temp);
   intToCharArray(getHumidity(),&hum);
 
@@ -66,12 +71,18 @@ void loop() {
     case 0:
       // IDLE
       // check display temp hum
-
+      //check water elvel
+      waterlevel = adcread(WATERSENSORPIN);
+        if(waterlevel < 20){
+          state = 3;
+          break;
+        }
       LCDMonitor(temp,hum);
       setStateLED('g');
       break;
     case 1:
       // RUNNING
+      //check water level
       LCDMonitor(temp,hum);
       setStateLED('b');
       moveVent(-1);
