@@ -46,11 +46,11 @@ volatile unsigned char* MOTOR_PORT = (unsigned char*) 0x10B; // PORT L PINS 42 -
 volatile unsigned int waterLevelPin = 0; // Pin ??
 // LCD pins <--> Arduino pins
 const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to Blue, en(8) to black
-
+//const int RS = 53, EN = 52, D4 = 44, D5 = 45, D6 = 46, D7 = 47;
 float ventPosition = 45; // limited from 0 - 90;
 int waterLevel = 0;
 int threshold = 500;
-int state = 1; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error -- Starts Disabled 
+int state = 0; // 0 = idle, 1 = running ; 2 = DISABLED ; 3 = error -- Starts Disabled 
 
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
@@ -82,6 +82,7 @@ void setup() {
 void loop() {
   char* temp;
   char* hum;
+  startCooler = true;
   if (startCooler){
   unsigned char waterlevel;
   intToCharArray(getTemp(),&temp);
@@ -96,8 +97,9 @@ void loop() {
       // check display temp hum
       //check water elvel
       LCDMonitor(temp,hum);
+      Serial.println("Doing");
       setStateLED('g');
-      state = checkWaterLevel();
+      //state = checkWaterLevel();
       break;
     case 1:
       // RUNNING
@@ -121,7 +123,7 @@ void loop() {
   }
 // remove after testing
   delay(1000);
-//state++;
+state++;
 if(state == 4){
   state = 0;
 }
