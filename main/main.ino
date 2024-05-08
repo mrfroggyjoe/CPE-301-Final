@@ -17,8 +17,7 @@ int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
 
 const int WATERSENSORPIN = 2;
-const int interruptPin = 10;
-const int StartButton = 2; 
+const int StartButton = 15; 
 volatile bool startCooler = false;
 
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
@@ -61,7 +60,7 @@ void setup() {
 
   Serial.begin(9600);
   pinMode(StartButton, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);
+  attachInterrupt(digitalPinToInterrupt(StartButton), blink, RISING);
   Vent.setSpeed(2);
   UARTStart(9600);
   lcd.begin(16, 2);
