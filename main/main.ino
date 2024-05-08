@@ -17,7 +17,10 @@ int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
 
 const int WATERSENSORPIN = 2;
-const byte interruptPin = 10;
+const int interruptPin = 10;
+const int StartButton = 2; 
+volatile bool startCooler = false;
+
  volatile unsigned char *myUCSR0A = (unsigned char *)0x00C0;
  volatile unsigned char *myUCSR0B = (unsigned char *)0x00C1;
  volatile unsigned char *myUCSR0C = (unsigned char *)0x00C2;
@@ -57,21 +60,23 @@ void setup() {
   *MOTOR_DDR &= 0b10000000; // set pin 43-49 for read
 
   Serial.begin(9600);
-
+  pinMode(StartButton, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);
   Vent.setSpeed(2);
   UARTStart(9600);
   lcd.begin(16, 2);
   adc_init();
+  
 }
 
 void loop() {
-  
+  if (startCooler){
   char* temp;
   char* hum;
   unsigned char waterlevel;
   intToCharArray(getTemp(),&temp);
   intToCharArray(getHumidity(),&hum);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);
+
 
   switch (state){
     case 0:
@@ -101,6 +106,7 @@ void loop() {
       setStateLED('r');
       break;
   } 
+  }
 // remove after testing
   delay(1000);
 //state++;
@@ -145,7 +151,8 @@ void controlFan(int onOff){
 int getVentMovement(){
   if (MOTOR_PORT & 0b01000000){
     return -1;
-  } else if (MOTOR_PORT & 0b00100000){
+  } 
+  else (MOTOR_PORT & 0b00100000){
     return 1;
   }
 }
@@ -275,5 +282,4 @@ void intToCharArray(int in, char **mem){
 }
 void blink() {
   state = !state;
-  
 }
