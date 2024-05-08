@@ -5,6 +5,7 @@
 #include <LiquidCrystal.h>
 #include <DHT11.h>
 #include <Stepper.h>
+#include <RTClib.h>
 
 
  #define RDA 0x80
@@ -12,6 +13,7 @@
 
 
 DHT11 DHT(10); // connect to pin 10;
+RTC_DS3231 rtc;
 
 int stepsPerRevolution = 2048;
 Stepper Vent = Stepper(stepsPerRevolution, 22, 24, 26 , 28);
@@ -65,6 +67,15 @@ void setup() {
   UARTStart(9600);
   lcd.begin(16, 2);
   adc_init();
+
+   // SETUP RTC MODULE
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    Serial.flush();
+    while (1);
+  }
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+
   
 }
 
@@ -75,6 +86,8 @@ void loop() {
   unsigned char waterlevel;
   intToCharArray(getTemp(),&temp);
   intToCharArray(getHumidity(),&hum);
+
+  DateTime now = rtc.now();
 
 
   switch (state){
