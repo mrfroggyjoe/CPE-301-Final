@@ -70,9 +70,9 @@ void setup() {
 }
 
 void loop() {
-  if (startCooler){
   char* temp;
   char* hum;
+  if (startCooler){
   unsigned char waterlevel;
   intToCharArray(getTemp(),&temp);
   intToCharArray(getHumidity(),&hum);
@@ -149,10 +149,10 @@ void controlFan(int onOff){
 }
 
 int getVentMovement(){
-  if (MOTOR_PORT & 0b01000000){
+  if (*MOTOR_PORT & 0b01000000){
     return -1;
   } 
-  else (MOTOR_PORT & 0b00100000){
+  else if (*MOTOR_PORT & 0b00100000){
     return 1;
   }
 }
