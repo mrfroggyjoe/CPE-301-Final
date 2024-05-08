@@ -88,7 +88,7 @@ void loop() {
   intToCharArray(getTemp(),&temp);
   intToCharArray(getHumidity(),&hum);
 
-  DateTime now = rtc.now();
+
 
 
   switch (state){
@@ -159,7 +159,27 @@ void controlFan(int onOff){
     *MOTOR_PORT |= 0b10000000;
   } else if (onOff == 0){
     *MOTOR_PORT &= 0b01111111;
+    Serial.println("Motor turned off:" );
+    reportTime();
+
   }
+}
+void reportTime(){
+  DateTime now = rtc.now();
+
+  Serial.print(now.month(), DEC);
+  Serial.print('/');
+  Serial.print(now.day(), DEC);
+  Serial.print('/');
+  Serial.print(now.year(), DEC);
+  Serial.print(' ');
+  Serial.print(now.hour(), DEC);
+  Serial.print(':');
+  Serial.print(now.minute(), DEC);
+  Serial.print(':');
+  Serial.println(now.second(), DEC);
+  Serial.print('/n');
+
 }
 
 int getVentMovement(){
