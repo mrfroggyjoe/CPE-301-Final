@@ -172,19 +172,20 @@ void controlFan(int onOff){
 
 void reportTime(){
   DateTime now = rtc.now();
-
-  Serial.print(now.month(), DEC);
-  Serial.print('/');
-  Serial.print(now.day(), DEC);
-  Serial.print('/');
-  Serial.print(now.year(), DEC);
-  Serial.print(' ');
-  Serial.print(now.hour(), DEC);
-  Serial.print(':');
-  Serial.print(now.minute(), DEC);
-  Serial.print(':');
-  Serial.println(now.second(), DEC);
-  Serial.print('/n');
+  UARTStart(9600);
+ 
+  UARTOut(now.month());
+  UARTOut('/');
+  UARTOut(now.day());
+  UARTOut('/');
+  UARTOut(now.year());
+  UARTOut(' ');
+  UARTOut(now.hour());
+  UARTOut(':');
+  UARTOut(now.minute());
+  UARTOut(':');
+  UARTOut(now.second());
+  UARTOut('\n'); // Transmit newline
 
 }
 
