@@ -99,26 +99,31 @@ void loop() {
       LCDMonitor(temp,hum);
       setStateLED('g');
       moveVent(getVentMovement());
+      controlFan(1);
       break;
     case 1:
       // RUNNING
       moveVent(getVentMovement());
       LCDMonitor(temp,hum);
       setStateLED('b');
+      controlFan(0);
       break;
     case 2:
       // DISABLED
       moveVent(getVentMovement());
       lcd.clear();
       setStateLED('y');
+      controlFan(1);
       break;
     case 3:
       // ERROR 
       LCDDisplay(0,"Water Level is");
       LCDDisplay(1,"too low!");
       setStateLED('r');
+      controlFan(1);
       break;
   }
+    // Change between states 
     if(checkWaterLevel() == 3){ 
       state = 3;
     } else if (getTemp() < 74){
@@ -158,11 +163,10 @@ void moveVent(int direction){
 
 void controlFan(int onOff){
   if (onOff == 1){
-    *MOTOR_PORT |= 0b10000000;
+    *MOTOR_PORT |= 0b10000000; // turn off fan
   } else if (onOff == 0){
-    *MOTOR_PORT &= 0b01111111;
+    *MOTOR_PORT &= 0b01111111; // turn on fan
   }
-  
   reportTime();
 }
 
@@ -320,7 +324,6 @@ void intToCharArray(int in, char **mem){
 }
 
 void blink() {
-  Serial.println(startCooler);
   if (startCooler == false){
     startCooler = true;
   } else if (startCooler == true){
