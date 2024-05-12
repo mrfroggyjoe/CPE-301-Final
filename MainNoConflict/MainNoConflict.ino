@@ -69,7 +69,8 @@ void setup() {
   adc_init();
      // SETUP RTC MODULE
   if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
+    lcd.clear();
+    lcd.print("Couldn't find RTC");
     Serial.flush();
     while (1);
   }
