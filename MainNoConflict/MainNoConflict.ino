@@ -1,7 +1,7 @@
 // CPE FINAL PROJECT
-//Sofia
-//Joe
-//Helene
+//Sofia Ahlstedt
+//Joe Antrim
+//Helene Henry-Greard
 #include <LiquidCrystal.h>
 #include <DHT11.h>
 #include <Stepper.h>
