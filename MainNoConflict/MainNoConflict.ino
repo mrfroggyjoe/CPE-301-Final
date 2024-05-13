@@ -42,6 +42,8 @@ volatile unsigned int BLUE = 7; // pin 13
 volatile unsigned char* MOTOR_DDR = (unsigned char*) 0x10A; // PORT L PINS 42 - 49 inclusive
 volatile unsigned char* MOTOR_PORT = (unsigned char*) 0x10B; // PORT L PINS 42 - 49 inclusive
 
+volatile unsigned char* START_DDR = (unsigned char*) 0x2D; //pin 2 /-- PORT E
+
 
 
 // LCD pins <--> Arduino pins
@@ -60,7 +62,7 @@ void setup() {
   *MOTOR_DDR |= 0b10000000; // set pin 42 to write for fan control
   *MOTOR_DDR &= 0b10000000; // set pin 43-49 for read
 
-  pinMode(StartButton, INPUT);
+  START_DDR &= 0b11101111; // set pin 2 to read for interupt start
 
   attachInterrupt(digitalPinToInterrupt(StartButton), blink, RISING);
   Vent.setSpeed(5);
