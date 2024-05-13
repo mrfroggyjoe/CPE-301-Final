@@ -43,7 +43,7 @@ volatile unsigned char* MOTOR_DDR = (unsigned char*) 0x10A; // PORT L PINS 42 - 
 volatile unsigned char* MOTOR_PORT = (unsigned char*) 0x10B; // PORT L PINS 42 - 49 inclusive
 
 
-volatile unsigned int waterLevelPin = 0; // Pin 0
+
 // LCD pins <--> Arduino pins
 const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to Blue, en(8) to black
 //const int RS = 53, EN = 52, D4 = 44, D5 = 45, D6 = 46, D7 = 47;
@@ -142,7 +142,6 @@ void loop() {
 //return 0 if okay 3 if too low
 int checkWaterLevel(){
   int waterlevel = adc_read(WATERSENSORPIN);
-  Serial.println(waterlevel);
     if(waterlevel < 200){
       return 3;
     }
