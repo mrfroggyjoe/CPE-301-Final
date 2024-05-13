@@ -160,7 +160,6 @@ void controlFan(int onOff){
   } else if (onOff == 0){
     *MOTOR_PORT &= 0b01111111;
     Serial.println("Motor turned off:" );
-    reportTime();
 
   }
 }
