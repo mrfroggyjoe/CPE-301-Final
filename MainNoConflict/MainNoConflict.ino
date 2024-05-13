@@ -43,7 +43,7 @@ volatile unsigned char* MOTOR_DDR = (unsigned char*) 0x10A; // PORT L PINS 42 - 
 volatile unsigned char* MOTOR_PORT = (unsigned char*) 0x10B; // PORT L PINS 42 - 49 inclusive
 
 
-volatile unsigned int waterLevelPin = 0; // Pin ??
+volatile unsigned int waterLevelPin = 0; // Pin 0
 // LCD pins <--> Arduino pins
 const int RS = 9, EN = 8, D4 = 4, D5 = 5, D6 = 6, D7 = 7; // connect RS(9) to Blue, en(8) to black
 //const int RS = 53, EN = 52, D4 = 44, D5 = 45, D6 = 46, D7 = 47;
@@ -69,8 +69,8 @@ void setup() {
   adc_init();
      // SETUP RTC MODULE
   if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    Serial.flush();
+    lcd.clear();
+    lcd.print("Couldn't find RTC");
     while (1);
   }
   rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
@@ -99,26 +99,31 @@ void loop() {
       LCDMonitor(temp,hum);
       setStateLED('g');
       moveVent(getVentMovement());
+      controlFan(1);
       break;
     case 1:
       // RUNNING
       moveVent(getVentMovement());
       LCDMonitor(temp,hum);
       setStateLED('b');
+      controlFan(0);
       break;
     case 2:
       // DISABLED
       moveVent(getVentMovement());
       lcd.clear();
       setStateLED('y');
+      controlFan(1);
       break;
     case 3:
       // ERROR 
       LCDDisplay(0,"Water Level is");
       LCDDisplay(1,"too low!");
       setStateLED('r');
+      controlFan(1);
       break;
   }
+    // Change between states 
     if(checkWaterLevel() == 3){ 
       state = 3;
     } else if (getTemp() < 74){
@@ -158,29 +163,29 @@ void moveVent(int direction){
 
 void controlFan(int onOff){
   if (onOff == 1){
-    *MOTOR_PORT |= 0b10000000;
+    *MOTOR_PORT |= 0b10000000; // turn off fan
   } else if (onOff == 0){
-    *MOTOR_PORT &= 0b01111111;
+    *MOTOR_PORT &= 0b01111111; // turn on fan
   }
-  
   reportTime();
 }
 
 void reportTime(){
   DateTime now = rtc.now();
-
-  Serial.print(now.month(), DEC);
-  Serial.print('/');
-  Serial.print(now.day(), DEC);
-  Serial.print('/');
-  Serial.print(now.year(), DEC);
-  Serial.print(' ');
-  Serial.print(now.hour(), DEC);
-  Serial.print(':');
-  Serial.print(now.minute(), DEC);
-  Serial.print(':');
-  Serial.println(now.second(), DEC);
-  Serial.print('/n');
+  UARTStart(9600);
+ 
+  UARTOut(now.month());
+  UARTOut('/');
+  UARTOut(now.day());
+  UARTOut('/');
+  UARTOut(now.year());
+  UARTOut(' ');
+  UARTOut(now.hour());
+  UARTOut(':');
+  UARTOut(now.minute());
+  UARTOut(':');
+  UARTOut(now.second());
+  UARTOut('\n'); // Transmit newline
 
 }
 
@@ -320,7 +325,6 @@ void intToCharArray(int in, char **mem){
 }
 
 void blink() {
-  Serial.println(startCooler);
   if (startCooler == false){
     startCooler = true;
   } else if (startCooler == true){
