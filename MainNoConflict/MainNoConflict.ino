@@ -62,7 +62,7 @@ void setup() {
   *MOTOR_DDR |= 0b10000000; // set pin 42 to write for fan control
   *MOTOR_DDR &= 0b10000000; // set pin 43-49 for read
 
-  START_DDR &= 0b11101111; // set pin 2 to read for interupt start
+  *START_DDR &= 0b11101111; // set pin 2 to read for interupt start
 
   attachInterrupt(digitalPinToInterrupt(StartButton), blink, RISING);
   Vent.setSpeed(5);
